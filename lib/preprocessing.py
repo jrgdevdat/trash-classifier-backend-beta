@@ -3,6 +3,7 @@ import cv2
 from keras.utils import Sequence, to_categorical
 import os
 import math
+from keras.applications.vgg16 import preprocess_input
 
 
 class InputsPreprocessor:
@@ -10,33 +11,26 @@ class InputsPreprocessor:
     def get_inputs(self, features):
 
         # - Imagen del elemento
+        trash_image = features['Trash image']
 
-        # -- Agregar relleno blanco para completar resolución máxima
-        element_image = features['Trash image']
-        element_image = element_image[:646, :1280, :]
-        prep_element_image = np.full((646, 1280, 3), 255, dtype=np.uint8)
-        element_image_shape = element_image.shape
-        prep_element_image[:element_image_shape[0], :element_image_shape[1], :] = element_image[:,:,:]
+        # -- Redimensionar a (224, 224, 3)
+        new_height = 224
+        new_width = 224
+        trash_image = cv2.resize(trash_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
 
-        # -- Redimensionar a la mitad (323, 640, 3) manteniendo relación de aspecto
-        new_height = 323
-        new_width = 640
-        prep_element_image = cv2.resize(prep_element_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-
-        # -- Normalizar
-        prep_element_image = prep_element_image.astype('float32')
-        prep_element_image /= 255
+        # -- Preprocesamiento adicional necesario para VGG16
+        trash_image = preprocess_input(trash_image)
 
         # Preparar arreglo con inputs
-        input_element_image = np.zeros((1,) + prep_element_image.shape, dtype=np.float32)
-        input_element_image[0] = prep_element_image
+        input_image = np.zeros((1,) + trash_image.shape, dtype=np.float32)
+        input_image[0] = trash_image
 
-        inputs = input_element_image
+        inputs = input_image
 
         return inputs
 
     def get_inputs_shape(self):
-        return (323, 640, 3)
+        return (224, 224, 3)
 
 
 class TrashClassifierDataSequence(Sequence):
@@ -55,7 +49,7 @@ class TrashClassifierDataSequence(Sequence):
     def __len__(self):
         return math.ceil(self.number_of_samples / float(self.batch_size))
 
-    def __prepare_batch_outputs_list(self, actual_batch_size):
+    def __prepare_batch_output(self, actual_batch_size):
         num_of_property_classes = 3
         output = np.zeros((actual_batch_size, num_of_property_classes), dtype=np.float32)
         return output
@@ -74,8 +68,8 @@ class TrashClassifierDataSequence(Sequence):
         inputs_element_shape = self.inputs_preprocessor.get_inputs_shape()
         inputs = np.zeros((actual_batch_size,) + inputs_element_shape, dtype=np.float32)
         
-        # Preparar la lista con el batch de cada salida
-        outputs = self.__prepare_batch_outputs_list(actual_batch_size)
+        # Preparar el batch de salida
+        output = self.__prepare_batch_output(actual_batch_size)
 
         # Iterar por cada archivo npz del batch
         current_batch_element_index = 0
@@ -96,10 +90,10 @@ class TrashClassifierDataSequence(Sequence):
             num_of_property_classes = 3
             output_array = np.zeros((1,1), dtype=np.uint16)
             output_array[0, 0] = labels['trash-type']
-            outputs[current_batch_element_index] = to_categorical(output_array, num_classes=num_of_property_classes)[0]
+            output[current_batch_element_index] = to_categorical(output_array, num_classes=num_of_property_classes)[0]
 
             # Aumentar índice del elemento del batch actual
             current_batch_element_index += 1
 
         # Retornar batch
-        return inputs, outputs
+        return inputs, output

@@ -21,7 +21,8 @@ print(dataset_info)
 learning_rate = 0.10
 hidden_units = 10
 decoder_layers = 2
-hyperparameters_config = HyperparametersConfiguration(learning_rate, hidden_units, decoder_layers)
+encoder_trainable = False
+hyperparameters_config = HyperparametersConfiguration(learning_rate, hidden_units, decoder_layers, encoder_trainable)
 
 # Crear modelo interno de la red neuronal
 trash_classifier_inner_model_architect = TrashClassifierInnerModelArchitect()
@@ -71,7 +72,7 @@ evaluation_sequence = TrashClassifierDataSequence(
 trash_classifier.evaluate_sequence(evaluation_sequence)
 
 # Guardar red neuronal
-#trash_classifier.save_to_h5(model_dir_path)
+trash_classifier.save_to_h5(model_dir_path)
 
 # Eliminar red neuronal
 del trash_classifier

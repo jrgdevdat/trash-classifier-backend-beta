@@ -11,7 +11,7 @@ class TrashClassifierInnerModelArchitect:
 
     def create_inner_model(self, hyperparameters_config):
 
-        image_shape = (323, 640, 3)        
+        image_shape = (224, 224, 3)        
         hidden_units = hyperparameters_config.hidden_units # Número de unidades en las capas ocultas        
 
         # Definición de inputs
@@ -39,6 +39,10 @@ class TrashClassifierInnerModelArchitect:
 
         model = Model(inputs=image_input, outputs=prop_out)
 
+        # Congelar pesos del codificador si fue especificado
+        if not hyperparameters_config.encoder_trainable:
+            vgg_16.trainable = False
+
         return model
 
 
@@ -51,11 +55,12 @@ class TrashClassifierNeuralNetwork:
             self.creation_date = '_'.join(str(datetime.now()).split('.')[0].split(' '))
         else:
             self.creation_date = creation_date
-        self.model_id = 'date,{};lr,{};hu,{};dl,{}'.format(
+        self.model_id = 'date,{};lr,{};hu,{};dl,{};et,{}'.format(
             self.creation_date,
             self.hyperparameters_configuration.learning_rate,
             self.hyperparameters_configuration.hidden_units,
             self.hyperparameters_configuration.decoder_layers,
+            self.hyperparameters_configuration.encoder_trainable,
         )
 
     def print_summary(self):
@@ -68,8 +73,7 @@ class TrashClassifierNeuralNetwork:
         output_layer_name = 'trash_type'
         loss[output_layer_name] = 'categorical_crossentropy'
         metrics[output_layer_name] = ['categorical_accuracy']
-
-        optimizer = Adam(lr=self.hyperparameters_configuration.learning_rate, epsilon=10 ** -8)
+        optimizer = Adam(learning_rate=self.hyperparameters_configuration.learning_rate, epsilon=10 ** -8)
         self.inner_model.compile(optimizer, loss=loss, metrics=metrics)
     
     def __del__(self):
@@ -86,12 +90,12 @@ class TrashClassifierNeuralNetwork:
         # Entrenar modelo interno
         print('**** Training about to start\tinitial epoch: {}\tfinal_epoch: {}'.format(
             initial_epoch, epochs))
-        return self.inner_model.fit_generator(
-            training_sequence, epochs=epochs, verbose=0, validation_data=validation_sequence, initial_epoch=initial_epoch)
+        return self.inner_model.fit(
+            x=training_sequence, epochs=epochs, verbose=2, validation_data=validation_sequence, initial_epoch=initial_epoch)
     
     def evaluate_sequence(self, evaluation_sequence):
         print('**** Evaluation about to start')
-        scores = self.inner_model.evaluate_generator(evaluation_sequence)
+        scores = self.inner_model.evaluate(x=evaluation_sequence, verbose=2)
         # Imprimir cada valor de loss y métricas
         for score_name, score_value in zip(self.inner_model.metrics_names, scores):
             print(score_name, score_value)
