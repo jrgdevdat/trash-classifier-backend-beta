@@ -2,7 +2,7 @@ from datetime import datetime
 from keras.optimizers import Adam
 from keras.layers import Input, Dense
 from keras.initializers import RandomNormal
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.applications.vgg16 import VGG16
 import math
 import os
@@ -51,17 +51,18 @@ class TrashClassifierNeuralNetwork:
 
     def __init__(self, inner_model, hyperparameters_configuration, creation_date=None):
         self.inner_model = inner_model
-        self.hyperparameters_configuration = hyperparameters_configuration
         if creation_date is None:
             self.creation_date = '_'.join(str(datetime.now()).split('.')[0].split(' '))
         else:
             self.creation_date = creation_date
-        self.model_id = 'date,{};lr,{};hu,{};dl,{};et,{}'.format(
-            self.creation_date,
-            self.hyperparameters_configuration.learning_rate,
-            self.hyperparameters_configuration.hidden_units,
-            self.hyperparameters_configuration.decoder_layers,
-            self.hyperparameters_configuration.encoder_trainable,
+        if hyperparameters_configuration is not None:
+            self.hyperparameters_configuration = hyperparameters_configuration
+            self.model_id = 'date,{};lr,{};hu,{};dl,{};et,{}'.format(
+                self.creation_date,
+                self.hyperparameters_configuration.learning_rate,
+                self.hyperparameters_configuration.hidden_units,
+                self.hyperparameters_configuration.decoder_layers,
+                self.hyperparameters_configuration.encoder_trainable,
         )
 
     def print_summary(self):
@@ -104,3 +105,13 @@ class TrashClassifierNeuralNetwork:
     def save_to_h5(self, target_dir_path):
         h5_file_path = '{}.h5'.format(os.path.join(target_dir_path, 'model-trained'))
         self.inner_model.save(h5_file_path)
+
+    @classmethod
+    def fromFile(cls, model_h5_file_path):
+        # Cargar modelo
+        inner_model = load_model(model_h5_file_path)
+        # Crear red neuronal
+        return cls(inner_model, None)
+    
+    def predict_on_input(self, prediction_input):
+        return self.inner_model.predict(prediction_input, batch_size=1, verbose=2)
