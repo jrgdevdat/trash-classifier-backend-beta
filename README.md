@@ -15,6 +15,13 @@ Una vez activado el ambiente virtual, ejecutar el siguiente comando en la raíz 
 uv pip sync requirements.txt
 ```
 
+# Preparar dataset para entrenamiento
+
+Para transformar las imágenes originales en los archivos que se consumen al entrenar el modelo se debe ejecutar el siguiente script:
+```bash
+uv run prepare_dataset.py
+```
+
 # Realizar entrenamiento
 
 Para entrenar un modelo se ejecuta el siguiente comando una vez configuradas las variables generales e hiperparámetros: 

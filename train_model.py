@@ -9,7 +9,7 @@ from lib.models import TrashClassifierInnerModelArchitect, TrashClassifierNeural
 dataset_dir_path = 'dataset/preprocessed'
 model_dir_path = 'model'
 epochs = 1
-batch_size = 4
+batch_size = 1
 
 # Leer información del dataset
 dataset_file_reader = DatasetFileReader()
@@ -19,8 +19,8 @@ print(dataset_info)
 
 # Crear configuración de hiperparámetros
 learning_rate = 0.10
-hidden_units = 10
-decoder_layers = 2
+hidden_units = 2
+decoder_layers = 1
 encoder_trainable = False
 hyperparameters_config = HyperparametersConfiguration(learning_rate, hidden_units, decoder_layers, encoder_trainable)
 

@@ -5,6 +5,7 @@ from keras.initializers import RandomNormal
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
 import math
+import os
 
 
 class TrashClassifierInnerModelArchitect:
@@ -99,3 +100,7 @@ class TrashClassifierNeuralNetwork:
         # Imprimir cada valor de loss y métricas
         for score_name, score_value in zip(self.inner_model.metrics_names, scores):
             print(score_name, score_value)
+
+    def save_to_h5(self, target_dir_path):
+        h5_file_path = '{}.h5'.format(os.path.join(target_dir_path, 'model-trained'))
+        self.inner_model.save(h5_file_path)

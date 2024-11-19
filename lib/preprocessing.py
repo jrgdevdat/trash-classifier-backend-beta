@@ -10,15 +10,10 @@ class InputsPreprocessor:
 
     def get_inputs(self, features):
 
-        # - Imagen del elemento
+        # Imagen del elemento
         trash_image = features['Trash image']
 
-        # -- Redimensionar a (224, 224, 3)
-        new_height = 224
-        new_width = 224
-        trash_image = cv2.resize(trash_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-
-        # -- Preprocesamiento adicional necesario para VGG16
+        # Preprocesamiento adicional necesario para VGG16
         trash_image = preprocess_input(trash_image)
 
         # Preparar arreglo con inputs
