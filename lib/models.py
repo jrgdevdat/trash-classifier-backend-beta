@@ -102,8 +102,9 @@ class TrashClassifierNeuralNetwork:
         for score_name, score_value in zip(self.inner_model.metrics_names, scores):
             print(score_name, score_value)
 
-    def save_to_h5(self, target_dir_path):
-        h5_file_path = '{}.h5'.format(os.path.join(target_dir_path, 'model-trained'))
+    def save_to_h5(self, target_dir_path, model_name=None):
+        model_file_name = 'model-trained' if model_name is None else model_name
+        h5_file_path = '{}.h5'.format(os.path.join(target_dir_path, model_file_name))
         self.inner_model.save(h5_file_path)
 
     @classmethod
