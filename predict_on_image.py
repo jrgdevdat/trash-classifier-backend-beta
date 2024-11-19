@@ -5,12 +5,12 @@ from lib.prediction import TrashClassifierPredictor
 image_file_path = 'test.JPG'
 model_file_path = 'model/model-trained.h5'
 
-# Load model
+# Cargar modelo
 trash_classifier_neural_network = TrashClassifierNeuralNetwork.fromFile(model_file_path)
 
-# Predict in image
+# Predecir sobre la imagen
 trash_classifier_predictor = TrashClassifierPredictor(trash_classifier_neural_network)
 prediction = trash_classifier_predictor.predict(image_file_path)
 
-# Print prediction
+# Imprimir etiqueta predicha
 print(prediction)

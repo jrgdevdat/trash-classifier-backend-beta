@@ -1,6 +1,8 @@
 import cv2
 from keras.applications.vgg16 import preprocess_input
 import numpy as np
+from lib.preprocessing import InputsPreprocessor, TrashClassifierDataSequence 
+
 
 class TrashClassifierPredictor:
 
@@ -44,3 +46,30 @@ class TrashClassifierPredictor:
         # Format prediction
         trash_image_formatted_prediction = self.__format_prediction(trash_image_prediction)
         return trash_image_formatted_prediction
+
+    def predict_on_dataset(self, dataset_dir_path, dataset_length):
+
+        # Crear matriz de confusión (esperado/predicho)
+        confusion_matrix = np.zeros((3, 3))
+
+        # Crear secuencia para consumir los datos del dataset
+        inputs_preprocessor = InputsPreprocessor()
+        batch_size = 1
+        data_sequence = TrashClassifierDataSequence(
+            dataset_dir_path,
+            dataset_length,
+            inputs_preprocessor,
+            batch_size,
+        )
+
+        for i in range(dataset_length):
+            # Obtener datos de entrada y salida del elemento del dataset
+            element_input, element_output = data_sequence[i]
+            # Realizar predicción sobre el elemento
+            prediction_output = self.trash_classifier_model.predict_on_input(element_input)
+            # Guardar el resultado en la matriz de confusión
+            expected_label_index = np.argmax(element_output[0])
+            predicted_label_index = np.argmax(prediction_output[0])
+            confusion_matrix[expected_label_index, predicted_label_index] += 1 
+
+        return confusion_matrix         
