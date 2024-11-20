@@ -15,36 +15,47 @@ Una vez activado el ambiente virtual, ejecutar el siguiente comando en la raíz 
 uv pip sync requirements.txt
 ```
 
-# Preparar dataset para entrenamiento
+# Scripts disponibles
+
+## Preparar dataset para entrenamiento
 
 Para transformar las imágenes originales en los archivos que se consumen al entrenar el modelo se debe ejecutar el siguiente script:
 ```bash
 uv run prepare_dataset.py
 ```
 
-# Realizar entrenamiento
+## Realizar entrenamiento
 
 Para entrenar un modelo se ejecuta el siguiente comando una vez configuradas las variables generales e hiperparámetros: 
 ```bash
 uv run train_model.py
 ```
 
-# Ajuste de hiperparámetros
+## Ajuste de hiperparámetros
 ```bash
 uv run tune_model.py
 ```
 
-# Inferencia sobre imagen
+## Inferencia sobre imagen
 ```bash
 uv run predict_on_image.py
 ```
 
-# Inferencia sobre dataset (cálculo de la matriz de confusión)
+## Inferencia sobre dataset (cálculo de la matriz de confusión)
 ```bash
 uv run predict_on_dataset.py
 ```
 
-# Iniciar backend
+# Backend
+
+## Configuración
+Crear archivo .env donde se especifique el modelo utilizado y el origen del frontend para la configuración del CORS:
+
+PREDICTION_MODEL_FILE_PATH="path/to/trained/model.h5"
+
+FRONTEND_ORIGIN="frontend-origin-used"
+
+## Iniciar backend
 ```bash
 fastapi dev main.py
 ```

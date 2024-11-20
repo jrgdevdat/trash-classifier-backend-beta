@@ -4,3 +4,4 @@ __pycache__/
 *.log
 /models_tuned/*.h5
 /selected_models/*.h5
+.env

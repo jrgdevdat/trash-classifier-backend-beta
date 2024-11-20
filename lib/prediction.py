@@ -52,7 +52,7 @@ class TrashClassifierPredictor:
 
     def predict_on_api_loaded_image(self, loaded_image_contents):
         image_contents_np_array = np.fromstring(loaded_image_contents, np.uint8)
-        prediction_image = cv2.imdecode(image_contents_np_array, cv2.IMREAD_COLOR)        
+        prediction_image = cv2.imdecode(image_contents_np_array, cv2.IMREAD_COLOR)
         return self.__predict(prediction_image)
 
     def predict_on_dataset(self, dataset_dir_path, dataset_length):
