@@ -9,9 +9,7 @@ class TrashClassifierPredictor:
     def __init__(self, trash_classifier_model):
         self.trash_classifier_model = trash_classifier_model
 
-    def __preprocess_image(self, image_file_path):
-        # Preprocess input image
-        trash_image = cv2.imread(image_file_path, 1)
+    def __preprocess_image(self, trash_image):
         # Convertir a RGB
         trash_image = cv2.cvtColor(trash_image, cv2.COLOR_BGR2RGB)
         # Redimensionar a (224, 224, 3)
@@ -35,9 +33,9 @@ class TrashClassifierPredictor:
         else:
             return 'Material reciclable'
 
-    def predict(self, image_file_path):
+    def __predict(self, trash_image):
         # Preprocess image
-        preprocessed_trash_image = self.__preprocess_image(image_file_path)
+        preprocessed_trash_image = self.__preprocess_image(trash_image)
         # Prepare prediction input
         prediction_input = self.__create_input_from_preprocessed_image(preprocessed_trash_image)
         # Get prediction output
@@ -46,6 +44,16 @@ class TrashClassifierPredictor:
         # Format prediction
         trash_image_formatted_prediction = self.__format_prediction(trash_image_prediction)
         return trash_image_formatted_prediction
+    
+    def predict_on_image_file(self, image_file_path):
+        # Cargar imagen
+        trash_image = cv2.imread(image_file_path, 1)
+        return self.__predict(trash_image)
+
+    def predict_on_api_loaded_image(self, loaded_image_contents):
+        image_contents_np_array = np.fromstring(loaded_image_contents, np.uint8)
+        prediction_image = cv2.imdecode(image_contents_np_array, cv2.IMREAD_COLOR)        
+        return self.__predict(prediction_image)
 
     def predict_on_dataset(self, dataset_dir_path, dataset_length):
 
@@ -72,4 +80,7 @@ class TrashClassifierPredictor:
             predicted_label_index = np.argmax(prediction_output[0])
             confusion_matrix[expected_label_index, predicted_label_index] += 1 
 
-        return confusion_matrix         
+        return confusion_matrix
+    
+    def __del__(self):
+        del self.trash_classifier_model

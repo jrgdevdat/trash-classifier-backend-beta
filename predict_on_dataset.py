@@ -6,7 +6,7 @@ from lib.prediction import TrashClassifierPredictor
 
 # Varibles importantes
 dataset_dir_path = 'dataset/preprocessed'
-model_file_path = 'model/model-trained.h5'
+model_file_path = 'selected_models/model-trained-0.h5'
 
 # Cargar modelo
 trash_classifier_neural_network = TrashClassifierNeuralNetwork.fromFile(model_file_path)
@@ -41,3 +41,6 @@ test_dataset_confusion_matrix = trash_classifier_predictor.predict_on_dataset(
     test_dir_path, test_dataset_length)
 print('\nConfusion matrix for test set')
 print(test_dataset_confusion_matrix)
+
+# Liberar recursos
+del trash_classifier_predictor

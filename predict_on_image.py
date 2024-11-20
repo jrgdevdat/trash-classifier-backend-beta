@@ -10,7 +10,10 @@ trash_classifier_neural_network = TrashClassifierNeuralNetwork.fromFile(model_fi
 
 # Predecir sobre la imagen
 trash_classifier_predictor = TrashClassifierPredictor(trash_classifier_neural_network)
-prediction = trash_classifier_predictor.predict(image_file_path)
+prediction = trash_classifier_predictor.predict_on_image_file(image_file_path)
 
 # Imprimir etiqueta predicha
 print(prediction)
+
+# Liberar recursos
+del trash_classifier_predictor

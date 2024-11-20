@@ -43,3 +43,10 @@ uv run predict_on_image.py
 ```bash
 uv run predict_on_dataset.py
 ```
+
+# Iniciar backend
+```bash
+fastapi dev main.py
+```
+**Nota:** Esperar a que salga el mensaje *Application startup complete* con el fin
+de tener el modelo correctamente cargado.
