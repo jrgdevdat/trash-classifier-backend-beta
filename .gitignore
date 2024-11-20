@@ -3,3 +3,4 @@ __pycache__/
 /model/*.h5
 *.log
 /models_tuned/*.h5
+/selected_models/*.h5

@@ -28,3 +28,18 @@ Para entrenar un modelo se ejecuta el siguiente comando una vez configuradas las
 ```bash
 uv run train_model.py
 ```
+
+# Ajuste de hiperparámetros
+```bash
+uv run tune_model.py
+```
+
+# Inferencia sobre imagen
+```bash
+uv run predict_on_image.py
+```
+
+# Inferencia sobre dataset (cálculo de la matriz de confusión)
+```bash
+uv run predict_on_dataset.py
+```

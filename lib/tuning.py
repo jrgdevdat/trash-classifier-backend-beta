@@ -81,7 +81,7 @@ class TrashClassifierNeuralNetworkTuner:
             trash_classifier.evaluate_sequence(evaluation_sequence)
 
             # Guardar red neuronal
-            model_name = 'model-trained-{}.h5'.format(model_number)
+            model_name = 'model-trained-{}'.format(model_number)
             trash_classifier.save_to_h5(self.model_dir_path, model_name)
 
             # Eliminar red neuronal
